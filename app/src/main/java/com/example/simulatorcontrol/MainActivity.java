@@ -20,14 +20,15 @@ public class MainActivity extends AppCompatActivity {
         EditText ipText = (EditText)findViewById(R.id.ipText);
         EditText portText = (EditText)findViewById(R.id.portText);
 
-        //try to connect
-        //if success -> open joystick activity
+        CommandClient client = new CommandClient("1.1.1.1", 5400);
 
-        Intent intent = new Intent(this,JoystickActivity.class);
+        //test client
 
 
-        intent.putExtra("",4);//temp
-        startActivity(intent);
+//        Intent intent = new Intent(this,JoystickActivity.class);
+//
+//        intent.putExtra("CommandClient",client);//temp
+//        startActivity(intent);
     }
 
 
