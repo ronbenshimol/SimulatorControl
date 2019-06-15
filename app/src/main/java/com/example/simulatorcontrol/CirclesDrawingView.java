@@ -31,12 +31,11 @@ public class CirclesDrawingView extends View {
 
         int paddingX = getPaddingLeft() + getPaddingRight();
         int paddingY = getPaddingTop() + getPaddingBottom();
-        float w = (float)(width - paddingX);
-        float h = (float)(height - paddingY);
-        x = w / 2;
-        y = h / 2;
+        x = (float)(width - paddingX) / 2;
+        y = (float)(height - paddingY) / 2;
 
-        boolean isLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+        boolean isLandscape = getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_LANDSCAPE;
         outerCircleRadius = isLandscape ? 400 : 500;
     }
 
@@ -70,79 +69,88 @@ public class CirclesDrawingView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         int action = MotionEventCompat.getActionMasked(event);
 
-        switch (action) {
-            case MotionEvent.ACTION_DOWN: {
+        if(action == MotionEvent.ACTION_DOWN){
 
-                if ((event.getX() >= x - innerCircleRadius && event.getX() <= x + innerCircleRadius)
-                        && (event.getY() >= y - innerCircleRadius && event.getY() <= y + innerCircleRadius)) {
-                    isJoystickMoving = true;
-                }
-                break;
+            if ((event.getX() >= x - innerCircleRadius && event.getX() <= x + innerCircleRadius)
+                    && (event.getY() >= y - innerCircleRadius && event.getY() <= y + innerCircleRadius)) {
+                isJoystickMoving = true;
             }
-            case MotionEvent.ACTION_MOVE: {
-                if (!isJoystickMoving) {
-                    return true;
-                }
 
-                float diameter, minX, maxX, minY, maxY;
-                float width = getWidth();
-                float height = getHeight();
+        }else if(action == MotionEvent.ACTION_MOVE){
 
-                x = event.getX();
-                y = event.getY();
-
-                diameter = outerCircleRadius * 2;
-                minX = (width - diameter) / 2;
-                maxX = width - (width - diameter) / 2 ;
-                minY = (height - diameter) / 2 ;
-                maxY = height - (height - diameter) / 2;
-
-                if ((x + innerCircleRadius > maxX) || (x - innerCircleRadius < minX) ||
-                        (y + innerCircleRadius > maxY) || (y - innerCircleRadius < minY)) {
-                    break;
-                }
-
-                float normalizedX, normalizedY;
-
-                // normalized the x & y between -1 to 1
-                if (x > (float)(getWidth() / 2)) {
-                    normalizedX = (((x + innerCircleRadius - minX)*2) / (maxX - minX)) - 1;
-                } else {
-                    normalizedX = (((x - innerCircleRadius - minX)*2) / (maxX - minX)) - 1;
-                }
-
-                if (y > (float)(getHeight() / 2)) {
-                    normalizedY = (((y + innerCircleRadius - minY)*2) / (maxY - minY)) - 1;
-                } else {
-                    normalizedY = (((y - innerCircleRadius - minY)*2) / (maxY - minY)) - 1;
-                }
-
-                // send to server
-                client.setAileron(normalizedY);
-                client.setElevator(normalizedX);
-
-
-                // move the joystick
-                invalidate();
-
-                break;
+            if (!isJoystickMoving) {
+                return true;
             }
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL: {
-                x =  (float)(getWidth() / 2);
-                y = (float)(getHeight() / 2);
 
-                // send default values to server
-                client.setAileron(0);
-                client.setElevator(0);
+            if (updateValues(event)) return true;
 
-                // move the joystick
-                invalidate();
 
-                isJoystickMoving = false;
-                break;
-            }
+            // move the joystick
+            invalidate();
+
+
+
+        } else if(action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL){
+
+            setDefaultValues();
         }
+
         return true;
+
+    }
+
+    private boolean updateValues(MotionEvent event) {
+        float diameter;
+        float minX, maxX, minY, maxY;
+        float width = getWidth();
+        float height = getHeight();
+
+        x = event.getX();
+        y = event.getY();
+
+        diameter = outerCircleRadius * 2;
+        minX = (width - diameter) / 2;
+        maxX = width - (width - diameter) / 2 ;
+        minY = (height - diameter) / 2 ;
+        maxY = height - (height - diameter) / 2;
+
+        if ((x + innerCircleRadius > maxX) || (x - innerCircleRadius < minX) ||
+                (y + innerCircleRadius > maxY) || (y - innerCircleRadius < minY)) {
+            return true;
+        }
+
+        float normalizedX, normalizedY;
+
+        // normalized the x & y between -1 to 1
+        if (x > (float)(getWidth() / 2)) {
+            normalizedX = (((x + innerCircleRadius - minX)*2) / (maxX - minX)) - 1;
+        } else {
+            normalizedX = (((x - innerCircleRadius - minX)*2) / (maxX - minX)) - 1;
+        }
+
+        if (y > (float)(getHeight() / 2)) {
+            normalizedY = (((y + innerCircleRadius - minY)*2) / (maxY - minY)) - 1;
+        } else {
+            normalizedY = (((y - innerCircleRadius - minY)*2) / (maxY - minY)) - 1;
+        }
+
+        // send to server
+        client.setAileron(normalizedY);
+        client.setElevator(normalizedX);
+        return false;
+    }
+
+    private void setDefaultValues() {
+        x =  (float)(getWidth() / 2);
+        y = (float)(getHeight() / 2);
+
+        // send default values to server
+        client.setAileron(0);
+        client.setElevator(0);
+
+        // move the joystick
+        invalidate();
+
+        isJoystickMoving = false;
     }
 }

@@ -21,7 +21,16 @@ public class MainActivity extends AppCompatActivity {
         EditText ipText = (EditText)findViewById(R.id.ipText);
         EditText portText = (EditText)findViewById(R.id.portText);
 
-        CommandClient client = new CommandClient("10.0.2.2", 1234);
+        String ip = ipText.getText().toString();
+        int port = 0;
+        try {
+            port = Integer.parseInt(portText.getText().toString());
+        }catch (Exception e){
+            e.getMessage();
+        }
+
+
+        CommandClient client = new CommandClient(ip, port);
 
         //test client
 
