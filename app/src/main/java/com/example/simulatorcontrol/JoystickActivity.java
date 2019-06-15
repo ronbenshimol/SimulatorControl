@@ -13,8 +13,12 @@ public class JoystickActivity extends AppCompatActivity {
         setContentView(R.layout.activity_joystick);
 
         Intent intent = getIntent();
-
         CommandClient client = (CommandClient)intent.getSerializableExtra("CommandClient");
+        client.connect();
+
+        CirclesDrawingView v = new CirclesDrawingView(this,client);
+        setContentView(v);
+
 
         int a =5;
     }

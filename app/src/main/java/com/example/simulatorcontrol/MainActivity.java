@@ -21,13 +21,8 @@ public class MainActivity extends AppCompatActivity {
         EditText ipText = (EditText)findViewById(R.id.ipText);
         EditText portText = (EditText)findViewById(R.id.portText);
 
-        String ip = ipText.getText().toString();
-        String port = portText.getText().toString();
-
         CommandClient client = new CommandClient("10.0.2.2", 1234);
-        client.connect();
-        client.setAileron(13);
-        client.setElevator(52);
+
         //test client
 
         Intent intent = new Intent(this,JoystickActivity.class);
