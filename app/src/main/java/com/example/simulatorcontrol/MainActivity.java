@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,15 +21,14 @@ public class MainActivity extends AppCompatActivity {
         EditText ipText = (EditText)findViewById(R.id.ipText);
         EditText portText = (EditText)findViewById(R.id.portText);
 
-        CommandClient client = new CommandClient("1.1.1.1", 5400);
+        CommandClient client = new CommandClient("10.0.2.2", 1234);
 
         //test client
 
+        Intent intent = new Intent(this,JoystickActivity.class);
 
-//        Intent intent = new Intent(this,JoystickActivity.class);
-//
-//        intent.putExtra("CommandClient",client);//temp
-//        startActivity(intent);
+        intent.putExtra("CommandClient",client);//temp
+        startActivity(intent);
     }
 
 
